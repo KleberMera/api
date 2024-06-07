@@ -1,11 +1,11 @@
 {
     "version":2,
-    "functions":[
+    "functions":
        {
           "src":"api/index.php",
           "use":"vercel/php@0.7.1"
        }
-    ],
+    ,
     
     "routes":[
        {
