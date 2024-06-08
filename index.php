@@ -23,6 +23,9 @@ $f3->set('DB', new DB\SQL('mysql:host=' . $f3->get('database.host') . ';port=330
     \PDO::MYSQL_ATTR_COMPRESS => TRUE, 
 ));
 
+//Listar Clienntes
+$f3->route('GET /listclients', 'Clientes_ctrl->listarClientesSql');
+
 $f3->route('GET /',
 	function($f3) {
 		$classes=array(

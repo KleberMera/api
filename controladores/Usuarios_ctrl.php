@@ -49,7 +49,7 @@ class Usuarios_ctrl
         $usuario = new M_Usuarios();
         $mensaje = "";
         $newId = 0;
-        $usuario->load(['usuario=?', $f3->get('POST.usuario_usuario')]); 
+        $usuario->load(['usuario=?', $f3->get('POST.usuario_usuario')]);
         if ($usuario->loaded() > 0) {
             $mensaje = "La Persona con ese usuario ya existe";
         } else {
@@ -75,16 +75,14 @@ class Usuarios_ctrl
 
             $mensaje = "Se ha registrado correctamente";
             $newId = $this->M_Usuario->get('id');
-            
         }
         echo json_encode(
             [
                 'mensaje' => $mensaje,
                 'id' => $newId
-            ]        
+            ]
         );
-
-    }//fin insertarUsuarios
+    } //fin insertarUsuarios
 
 
     public function editarUsuarios($f3)
@@ -113,8 +111,6 @@ class Usuarios_ctrl
         } else {
 
             $mensaje = "El Usuario con el id que intentas editar no existe";
-           
-            
         }
 
         // Devolver la respuesta en formato JSON
@@ -122,11 +118,11 @@ class Usuarios_ctrl
             [
                 'mensaje' => $mensaje,
                 'id' => $newId,
-                
+
 
             ]
         );
-    }//fin editarUsuarios
+    } //fin editarUsuarios
 
 
     public function eliminarUsuarios($f3)
@@ -147,6 +143,68 @@ class Usuarios_ctrl
         echo json_encode([
             'mensaje' => $mensaje,
             'id' => $newId
+        ]);
+    }
+
+
+    //Ingreso con usuario y clave
+    public function login($f3)
+    {
+        $usuario = new M_Usuarios();
+        $mensaje = "";
+        $newId = 0;
+
+
+        $usuario->load(['usuario=?', $f3->get('POST.usuario_usuario')]);
+        if ($usuario->loaded() > 0) {
+            $usuario->load(['clave=?', $f3->get('POST.usuario_clave')]);
+            if ($usuario->loaded() > 0) {
+                //verificar si esta activo
+                if ($usuario->get('activo') == 1) {
+                    $mensaje = "Se ha ingresado correctamente";
+                    $newId = $usuario->get('id');
+                    $retorno = 1;
+                } else {
+                    $mensaje = "El usuario no esta activo";
+                    $retorno = 0;
+                }
+            } else {
+                $mensaje = "Clave incorrecta";
+                $retorno = 0;
+            }
+        } else {
+            $mensaje = "El usuario no existe";
+            $retorno = 0;
+        }
+        echo json_encode([
+            'mensaje' => $mensaje,
+            'id' => $newId,
+            'retorno' => $retorno
+        ]);
+    }
+
+    //Cambio de clave
+    public function cambiarClave($f3)
+    {
+        //Ingresar nombre de usuario, si el usuario existe cambiar la clave, si no existe devolver mensaje de error
+        $usuario = new M_Usuarios();
+        $mensaje = "";
+        $newId = 0;
+        $usuario->load(['usuario=?', $f3->get('POST.usuario_usuario')]);
+        if ($usuario->loaded() > 0) {
+            $usuario->set('clave', $f3->get('POST.usuario_clave'));
+            $usuario->save();
+            $mensaje = "Se ha cambiado correctamente";
+            $newId = $usuario->get('id');
+            $retorno = 1;
+        } else {
+            $mensaje = "El usuario no existe";
+            $retorno = 0;
+        }
+        echo json_encode([
+            'mensaje' => $mensaje,
+            'id' => $newId,
+            'retorno' => $retorno
         ]);
     }
 }
