@@ -21,6 +21,7 @@ class Clientes_ctrl
             [
                 'cantidad' => count($items),
                 'data' => $items
+
             ]
 
         );
@@ -166,4 +167,37 @@ class Clientes_ctrl
     } //Fin eliminarClientes 
 
 
+
+    //listar solo los nombres de los clientes
+    public function listarClientesNombres($f3)
+    {
+        $cadenaSql = "";
+        $cadenaSql = $cadenaSql . " select nombre ";
+        $cadenaSql = $cadenaSql . " from clientes ";
+
+        //echo $cadenaSql
+        $items = $f3->DB->exec($cadenaSql);
+        echo json_encode(
+            [
+                'cantidad' => count($items),
+                'data' => $items
+            ]
+
+        );
+    }
+
+    public function listarClientesPorNombre($f3)
+    {
+        $nombre = $f3->get('POST.cliente_nombre');
+        $cadenaSql = "select id ";
+        $cadenaSql = $cadenaSql . " from clientes ";
+        $cadenaSql = $cadenaSql . " where nombre = '" . $nombre . "'";
+        $items = $f3->DB->exec($cadenaSql);
+        echo json_encode(
+            [
+                'cantidad' => count($items),
+                'data' => $items
+            ]
+        );
+    }
 }

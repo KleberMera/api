@@ -28,54 +28,51 @@ class Pedidos_ctrl
             ]
 
         );
-    }//listarPedidosSql
+    } //listarPedidosSql
 
-    public function listarPedidosxidSql($f3){
-        $pedido_id=$f3->get('POST.pedido_id'); //debe tener este nombre al momento de enviar desde el cliente
-        $cadenaSql="";
-        $cadenaSql=$cadenaSql." select * ";
-        $cadenaSql=$cadenaSql." from pedidos ";
-        $cadenaSql=$cadenaSql." where id = ".$pedido_id;
+    public function listarPedidosxidSql($f3)
+    {
+        $pedido_id = $f3->get('POST.pedido_id'); //debe tener este nombre al momento de enviar desde el cliente
+        $cadenaSql = "";
+        $cadenaSql = $cadenaSql . " select * ";
+        $cadenaSql = $cadenaSql . " from pedidos ";
+        $cadenaSql = $cadenaSql . " where id = " . $pedido_id;
 
         //echo $cadenaSql
-        $items=$f3->DB->exec($cadenaSql);
+        $items = $f3->DB->exec($cadenaSql);
         echo json_encode(
             [
-                'mensaje'=> count($items)>0?'Operacion exitosa':'No hay registro para esa consulta',
-                'cantidad'=>count($items),
-                'data'=> $items
+                'mensaje' => count($items) > 0 ? 'Operacion exitosa' : 'No hay registro para esa consulta',
+                'cantidad' => count($items),
+                'data' => $items
             ]
 
         );
-    }//listarPedidosxidSql
+    } //listarPedidosxidSql
 
-    public function insertarPedidos($f3) {
-        /*{
-            "cliente_id": "1",
-            "fecha": "2023-07-17 14:40:00",
-            "usuario_id": "1",
-            "estado": "1"
-        }*/
+    public function insertarPedidos($f3)
+    {
+
         $mensaje = "";
         $newId = 0;
-    
+
         // Obtener los datos del pedido desde el POST
         $clienteId = $f3->get('POST.pedido_cliente_id');
         $fecha = $f3->get('POST.pedido_fecha');
         $usuarioId = $f3->get('POST.pedido_usuario_id');
         $estado = $f3->get('POST.pedido_estado');
-    
+
         // Verificar si el cliente existe
         $cliente = new M_Clientes();
         $cliente->load(['id=?', $clienteId]);
-    
+
         if ($cliente->loaded() == 0) {
             $mensaje = "El cliente con el id especificado no existe";
         } else {
             // Verificar si el usuario existe
             $usuario = new M_Usuarios();
             $usuario->load(['id=?', $usuarioId]);
-    
+
             if ($usuario->loaded() == 0) {
                 $mensaje = "El usuario con el id especificado no existe";
             } else {
@@ -86,12 +83,12 @@ class Pedidos_ctrl
                 $pedido->set('usuario_id', $usuarioId);
                 $pedido->set('estado', $estado);
                 $pedido->save();
-    
+
                 $mensaje = "Se ha registrado correctamente";
                 $newId = $pedido->get('id');
             }
         }
-    
+
         echo json_encode(
             [
                 'mensaje' => $mensaje,
@@ -101,41 +98,36 @@ class Pedidos_ctrl
     }
 
 
-    public function editarPedidos($f3) {
-        /*{
-            "id": "3",
-            "cliente_id": "1",
-            "fecha": "2023-07-17 14:40:00",
-            "usuario_id": "1",
-            "estado": "1"
-        }*/
+    public function editarPedidos($f3)
+    {
+
         $mensaje = "";
-    
+
         // Obtener los datos del pedido desde el POST
         $pedidoId = $f3->get('POST.pedido_id');
         $clienteId = $f3->get('POST.pedido_cliente_id');
         $fecha = $f3->get('POST.pedido_fecha');
         $usuarioId = $f3->get('POST.pedido_usuario_id');
         $estado = $f3->get('POST.pedido_estado');
-    
+
         // Cargar el pedido existente
         $pedido = new M_Pedidos();
         $pedido->load(['id=?', $pedidoId]);
-    
+
         if ($pedido->loaded() == 0) {
             $mensaje = "El pedido con el id especificado no existe";
         } else {
             // Verificar si el cliente existe
             $cliente = new M_Clientes();
             $cliente->load(['id=?', $clienteId]);
-    
+
             if ($cliente->loaded() == 0) {
                 $mensaje = "El cliente con el id especificado no existe";
             } else {
                 // Verificar si el usuario existe
                 $usuario = new M_Usuarios();
                 $usuario->load(['id=?', $usuarioId]);
-    
+
                 if ($usuario->loaded() == 0) {
                     $mensaje = "El usuario con el id especificado no existe";
                 } else {
@@ -145,12 +137,12 @@ class Pedidos_ctrl
                     $pedido->set('usuario_id', $usuarioId);
                     $pedido->set('estado', $estado);
                     $pedido->save();
-    
+
                     $mensaje = "El pedido ha sido actualizado correctamente";
                 }
             }
         }
-    
+
         echo json_encode(
             [
                 'mensaje' => $mensaje,
@@ -159,26 +151,27 @@ class Pedidos_ctrl
         );
     }
 
-    public function eliminarPedidos($f3) {
+    public function eliminarPedidos($f3)
+    {
         /*{
             "pedido_id": "3"
         }*/
         $mensaje = "";
-    
+
         // Obtener el id del pedido desde el POST
         $pedidoId = $f3->get('POST.pedido_id');
-    
+
         // Cargar el pedido existente
         $pedido = new M_Pedidos();
         $pedido->load(['id=?', $pedidoId]);
-    
+
         if ($pedido->loaded() == 0) {
             $mensaje = "El pedido con el id especificado no existe";
         } else {
             // Verificar si hay detalles del pedido
             $detallePedido = new M_Pedidos_detalles();
             $detallePedido->load(['pedido_id=?', $pedidoId]);
-    
+
             if ($detallePedido->loaded() > 0) {
                 $mensaje = "El pedido no puede ser eliminado porque tiene detalles asociados";
             } else {
@@ -187,7 +180,7 @@ class Pedidos_ctrl
                 $mensaje = "El pedido ha sido eliminado correctamente";
             }
         }
-    
+
         echo json_encode(
             [
                 'mensaje' => $mensaje,
@@ -195,11 +188,8 @@ class Pedidos_ctrl
             ]
         );
     }
-    
-    
+
 
     
-    
-
 
 }

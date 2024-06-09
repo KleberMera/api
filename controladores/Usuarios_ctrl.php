@@ -179,6 +179,9 @@ class Usuarios_ctrl
         echo json_encode([
             'mensaje' => $mensaje,
             'id' => $newId,
+            //retornar el nombre del usuario de ese id
+            'usuario' => $usuario->get('nombre'),
+           
             'retorno' => $retorno
         ]);
     }
@@ -194,7 +197,7 @@ class Usuarios_ctrl
         if ($usuario->loaded() > 0) {
             $usuario->set('clave', $f3->get('POST.usuario_clave'));
             $usuario->save();
-            $mensaje = "Se ha cambiado correctamente";
+            $mensaje = "Cambio de clave exitoso";
             $newId = $usuario->get('id');
             $retorno = 1;
         } else {
